@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" width="760" height="430" role="img" aria-label="Hexagonal architecture" direction="ltr" style="direction:ltr;unicode-bidi:isolate">
+  <title>Hexagonal architecture</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <rect x="20" y="14" width="720" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="726" y="33" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">APP  ·  inbound adapters  (internal/app, cmd)</text>
+  <rect x="40" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="145.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">HTTP API</text>
+  <text x="145.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">net/http · JSON envelope</text>
+  <rect x="275" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="380.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">TTL Sweeper</text>
+  <text x="380.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">background worker</text>
+  <rect x="510" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="615.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">CLI</text>
+  <text x="615.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">server · worker · migrate · seed</text>
+  <rect x="20" y="128" width="720" height="112" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="726" y="147" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">CORE  ·  business rules, no I/O  (internal/core)</text>
+  <rect x="40" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="145.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Inbound ports</text>
+  <text x="145.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">ReservationService</text>
+  <text x="145.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">CapacityService</text>
+  <rect x="275" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="380.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Services + Entities</text>
+  <text x="380.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">validation · TTL policy</text>
+  <text x="380.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">contract limit rules</text>
+  <rect x="510" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="615.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Outbound ports</text>
+  <text x="615.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">ReservationRepository</text>
+  <text x="615.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">CapacityRepository</text>
+  <rect x="20" y="262" width="720" height="80" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="34" y="281" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="start">INFRA  ·  outbound adapters  (internal/infra/postgres)</text>
+  <rect x="40" y="294" width="445" height="36" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="262.5" y="316.75" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL repositories  (pgx · row locks · one transaction per operation)</text>
+  <rect x="510" y="294" width="210" height="36" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="615.0" y="316.75" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#0f172a" text-anchor="middle">SQL files: schema · seed</text>
+  <path d="M 290 375 A 90.0 9 0 0 1 470 375 L 470 411 A 90.0 9 0 0 1 290 411 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 290 375 A 90.0 9 0 0 0 470 375" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="380.0" y="401.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL 16</text>
+  <path d="M 125 94 L 125 158" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 380 94 L 380 116 L 165 116 L 165 158" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 250 193 L 273 193" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 485 193 L 508 193" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 440 292 L 440 251 L 615 251 L 615 228" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <text x="528" y="246" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">implements</text>
+  <path d="M 262 330 L 262 394 L 288 394" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>

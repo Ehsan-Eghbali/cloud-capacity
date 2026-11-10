@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مستند طراحی و معماری سامانه تخصیص ظرفیت منابع ابری</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@page {
+  size: A4;
+  margin: 17mm 16mm 18mm 16mm;
+  @bottom-center {
+    content: counter(page, persian) " از " counter(pages, persian);
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 8.5pt;
+    color: #64748b;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body {
+  font-family: 'Vazirmatn', Tahoma, 'Segoe UI', Arial, sans-serif;
+  direction: rtl; text-align: right;
+  color: #0f172a; background: #fff;
+  font-size: 10pt; line-height: 1.85;
+  margin: 0;
+}
+main { max-width: 178mm; margin: 0 auto; }
+@media screen { body { padding: 28px 20px; background: #f1f5f9; } main { background: #fff; padding: 18mm 16mm; box-shadow: 0 1px 4px rgba(15,23,42,.12); } }
+
+header.cover { border-bottom: 2.5px solid #1d4ed8; padding-bottom: 11px; margin-bottom: 14px; }
+header.cover h1 { font-size: 19pt; font-weight: 800; line-height: 1.55; margin: 0 0 2px; color: #0f172a; }
+header.cover .en { direction: ltr; text-align: right; font-size: 10.5pt; font-weight: 500; color: #475569; margin: 0; unicode-bidi: plaintext; }
+header.cover .meta { margin: 7px 0 0; font-size: 8.8pt; color: #475569; }
+header.cover .meta a { color: #1d4ed8; text-decoration: none; direction: ltr; unicode-bidi: isolate; font-family: 'JetBrains Mono', monospace; font-size: 8.3pt; }
+
+nav.toc { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 9px 16px 10px; margin: 0 0 6px; }
+nav.toc .label { font-weight: 700; font-size: 9pt; color: #475569; margin-bottom: 2px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; columns: 3; column-gap: 18px; }
+nav.toc li { font-size: 8.9pt; line-height: 1.9; break-inside: avoid; }
+nav.toc a { color: #0f172a; text-decoration: none; }
+
+h2 { font-size: 13.5pt; font-weight: 800; color: #0f172a; margin: 22px 0 7px; padding: 3px 11px 3px 0; border-right: 4px solid #1d4ed8; line-height: 1.6; break-after: avoid; }
+h3 { font-size: 11pt; font-weight: 700; margin: 14px 0 4px; break-after: avoid; }
+p { margin: 6px 0; orphans: 3; widows: 3; text-align: justify; }
+strong { font-weight: 700; }
+a { color: #1d4ed8; text-decoration: none; }
+hr { display: none; }
+
+ul, ol { margin: 5px 0; padding: 0 22px 0 0; }
+ol { list-style-type: persian; }
+li { margin: 2.5px 0; }
+li > p { margin: 0; }
+
+code { font-family: 'JetBrains Mono', 'DejaVu Sans Mono', Consolas, monospace; font-size: 0.86em; direction: ltr; unicode-bidi: isolate;
+       background: #f1f5f9; color: #0f3a8a; padding: 0.5px 4px; border-radius: 3.5px; white-space: nowrap;
+       font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; direction: ltr; text-align: left; background: #0f172a; color: #e2e8f0; border-radius: 7px; padding: 10px 13px; margin: 9px 0;
+      font-size: 8.1pt; line-height: 1.6; overflow: hidden; white-space: pre-wrap; break-inside: avoid; }
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; white-space: pre-wrap; unicode-bidi: normal; }
+
+table { width: 100%; border-collapse: collapse; margin: 9px 0 11px; font-size: 9pt; line-height: 1.7; }
+thead { display: table-header-group; }
+th { background: #eff6ff; color: #1e3a8a; font-weight: 700; text-align: right; padding: 5px 8px; border: 1px solid #cbd5e1; }
+td { padding: 4.5px 8px; border: 1px solid #e2e8f0; vertical-align: top; text-align: right; }
+tr { break-inside: avoid; }
+tbody tr:nth-child(even) td { background: #fafbfd; }
+
+figure { margin: 11px 0 12px; text-align: center; break-inside: avoid; }
+figure svg { width: 100%; height: auto; max-width: 152mm; border: 1px solid #e2e8f0; border-radius: 8px; direction: ltr; }
+figure.fig-lifecycle svg { max-width: 142mm; }
+figure.fig-architecture svg { max-width: 132mm; }
+figure.fig-production svg { max-width: 140mm; }
+figcaption { font-size: 8.6pt; color: #64748b; margin-top: 2px; }
+
+</style>
+</head>
+<body>
+<main>
+<header class="cover">
+  <h1>مستند طراحی و معماری سامانه تخصیص ظرفیت منابع ابری</h1>
+  <p class="en">Cloud Capacity Allocator · Design and Architecture</p>
+  <p class="meta">مخزن کد: <a href="https://github.com/Ehsan-Eghbali/cloud-capacity">github.com/Ehsan-Eghbali/cloud-capacity</a></p>
+</header>
+<nav class="toc"><div class="label">فهرست</div><ol><li><a href="#s1">۱. خلاصه</a></li><li><a href="#s2">۲. مسئله و پاسخ طراحی</a></li><li><a href="#s3">۳. فرض‌ها</a></li><li><a href="#s4">۴. مدل داده</a></li><li><a href="#s5">۵. چرخه عمر رزرو</a></li><li><a href="#s6">۶. معماری نرم‌افزار</a></li><li><a href="#s7">۷. پردازش یک درخواست رزرو</a></li><li><a href="#s8">۸. همزمانی و سازگاری</a></li><li><a href="#s9">۹. Idempotency و ارسال دوباره</a></li><li><a href="#s10">۱۰. خرابی و بازیابی</a></li><li><a href="#s11">۱۱. API</a></li><li><a href="#s12">۱۲. توسعه در محیط واقعی</a></li><li><a href="#s13">۱۳. آزمون و راه‌اندازی</a></li><li><a href="#s14">۱۴. محدودیت‌های شناخته‌شده</a></li></ol></nav>
+<h2 id="s1">۱. خلاصه</h2>
+<p>این سامانه هسته Backend فرایندی است که پیش از ساخت یک سرویس ابری اجرا می‌شود: مشخص می‌کند منابع موردنیاز مشتری قابل ارائه هستند یا نه، در صورت امکان آن‌ها را برای مدت کوتاهی برای مشتری <strong>نگه می‌دارد (Hold)</strong> و در پایان، رزرو را <strong>نهایی (Commit)</strong>، <strong>لغو (Cancel)</strong> یا پس از پایان مهلت <strong>منقضی (Expire)</strong> می‌کند.</p>
+<p>سه تضمین اصلی طراحی:</p>
+<ol>
+<li><strong>ظرفیتی که به مشتری «بله» گفته شده تا پایان مهلت برای خودش می‌ماند</strong> و هیچ منبعی بیش از ظرفیت قابل‌فروش واگذار نمی‌شود.</li>
+<li><strong>ارسال دوباره یک درخواست، رزرو دوم نمی‌سازد</strong>؛ همان رزرو قبلی برمی‌گردد و چیزی دوبار کسر نمی‌شود.</li>
+<li><strong>هیچ رزروی نیمه‌کاره نمی‌ماند</strong>؛ هر Hold یا نهایی می‌شود، یا لغو، یا خودکار منقضی، و همه تغییرها قابل ردگیری هستند.</li>
+</ol>
+<p>پیاده‌سازی با Go و PostgreSQL انجام شده و با یک دستور <code>docker compose up --build</code> اجرا می‌شود.</p>
+<h2 id="s2">۲. مسئله و پاسخ طراحی</h2>
+<table>
+<thead>
+<tr>
+<th>مشکل مطرح‌شده در صورت مسئله</th>
+<th>پاسخ طراحی</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مشتری ظرفیتی را می‌بیند اما هنگام ساخت سرویس دیگر موجود نیست</td>
+<td>رزرو دومرحله‌ای: ظرفیت در لحظه پذیرش درخواست کسر و تا <code>expires_at</code> نگه داشته می‌شود. مشاهده ظرفیت فقط یک تصویر لحظه‌ای است؛ تضمین فقط با رزرو به دست می‌آید.</td>
+</tr>
+<tr>
+<td>نتیجه درخواست مشخص نیست و مشتری دوباره آن را می‌فرستد</td>
+<td>هر درخواست یک <code>Idempotency-Key</code> دارد. تکرار همان کلید همان رزرو را برمی‌گرداند. Commit و Cancel هم تکرارپذیرند.</td>
+</tr>
+<tr>
+<td>فرایندی آغاز می‌شود ولی هرگز به پایان نمی‌رسد</td>
+<td>هر Hold مهلت (TTL) دارد. Sweeper پس‌زمینه ظرفیت Holdهای رهاشده را آزاد می‌کند، حتی پس از کرش یا قطعی.</td>
+</tr>
+<tr>
+<td>تشخیص ظرفیت واقعی و پیگیری وضعیت دشوار است</td>
+<td>یک دفتر واحد برای هر (منطقه، منبع) با سه شمارنده <code>total / allocated / reserved</code> و یک Audit Log که در همان تراکنشِ هر تغییر نوشته می‌شود.</td>
+</tr>
+<tr>
+<td>یک درخواست به چند منبع نیاز دارد</td>
+<td>همه منابع یک درخواست در یک تراکنش بررسی و نگه داشته می‌شوند: یا همه، یا هیچ‌کدام.</td>
+</tr>
+<tr>
+<td>ظرفیت بعضی محصولات محدود است و سریع تمام می‌شود</td>
+<td>بررسی موجودی و کسر آن یک دستور اتمیک است و قید <code>CHECK</code> در دیتابیس مانع فروش بیش از ظرفیت می‌شود.</td>
+</tr>
+<tr>
+<td>پنل، اتوماسیون مشتری و سرویس‌های داخلی از سامانه استفاده می‌کنند</td>
+<td>یک REST API با قرارداد یکسان، کدهای وضعیت معنادار و پیام روشن برای دلیل رد.</td>
+</tr>
+</tbody>
+</table>
+<p>پنج قابلیت خواسته‌شده و Endpoint متناظر هر کدام در بخش ۱۱ آمده است.</p>
+<h2 id="s3">۳. فرض‌ها</h2>
+<p>صورت مسئله جزئیات رفتار را به طراح سپرده است. فرض‌های این طراحی:</p>
+<p><strong>منابع و ظرفیت</strong></p>
+<ol>
+<li>ظرفیت به ازای هر زوج (منطقه، نوع منبع) با سه شمارنده نگهداری می‌شود و <code>available = total − allocated − reserved</code>.</li>
+<li><code>total_capacity</code> <strong>ظرفیت قابل‌فروش</strong> است، نه لزوماً ظرفیت فیزیکی. سیاست فروش هر منبع (مثلاً Overcommit برای CPU و فروش یک‌به‌یک برای GPU) با همین عدد توسط تیم عملیات تعیین می‌شود و سامانه هرگز بیش از آن نمی‌فروشد.</li>
+<li>مقدار همه منابع عدد صحیح مثبت بر حسب واحد پایه است. منابع «قابل تقسیم» (CPU، حافظه، دیسک) یک استخر هستند و منابع «واحد مستقل» (GPU، IP عمومی) شمارش می‌شوند؛ این تفاوت با <code>is_divisible</code> در کاتالوگ مشخص است و هر منبع یک حداقل مقدار (<code>min_amount</code>) دارد. سامانه تعداد را مدیریت می‌کند؛ انتخاب واحد مشخص (کدام IP یا کدام GPU) کار سرویس Provisioning است.</li>
+<li>«محصول» (مثل ماشین مجازی) ترکیبی از منابع است که درخواست‌دهنده مشخص می‌کند. سامانه کاتالوگ محصول ندارد و اطلاعات محصول در <code>metadata</code> درخواست می‌آید.</li>
+<li>هر درخواست دقیقاً به یک منطقه مربوط است.</li>
+<li>مناطق، کاتالوگ منابع، ظرفیت‌ها، مشتریان و قراردادها را سامانه‌های دیگر مدیریت می‌کنند و اینجا با Seed وارد می‌شوند.</li>
+</ol>
+<p><strong>محدودیت‌های مشتری</strong></p>
+<ol start="7">
+<li>محدودیت هر مشتری به ازای هر نوع منبع تعریف می‌شود: سقف کل، حداقل و حداکثر هر درخواست، و مجاز بودن یا نبودن منبع.</li>
+<li><strong>سقف قرارداد کلی است</strong>: مصرف مشتری در همه مناطق با هم جمع می‌شود، چون قرارداد با مشتری بسته می‌شود نه با دیتاسنتر.</li>
+<li>مصرف مشتری برابر است با مجموع رزروهای <code>RESERVED</code> و <code>COMMITTED</code>. رزروهای لغوشده و منقضی مصرف حساب نمی‌شوند.</li>
+<li>اگر برای منبعی هیچ سطر قراردادی وجود نداشته باشد، فقط حداقل کاتالوگ و ظرفیت منطقه اعمال می‌شود. برای ممنوع کردن یک منبع، سطر قرارداد با <code>is_enabled = false</code> ثبت می‌شود.</li>
+</ol>
+<p><strong>چرخه عمر</strong></p>
+<ol start="11">
+<li>درخواست همان لحظه بررسی می‌شود: یا رزرو ساخته می‌شود، یا با ذکر دلیل رد می‌شود. صف انتظار و تخصیص جزئی وجود ندارد.</li>
+<li>درخواست ردشده ذخیره نمی‌شود. دلیل رد در پاسخ همان درخواست می‌آید و ارسال دوباره (حتی با همان کلید) از نو بررسی می‌شود.</li>
+<li>مهلت Hold را سرور تعیین می‌کند (پیش‌فرض ۶۰۰ ثانیه، قابل تنظیم). کلاینت آن را انتخاب نمی‌کند و مقدار اعمال‌شده در پاسخ برمی‌گردد.</li>
+<li>Commit پس از پایان مهلت پذیرفته نمی‌شود، حتی اگر Sweeper هنوز آن Hold را آزاد نکرده باشد.</li>
+<li><code>COMMITTED</code> در این محدوده وضعیت پایانی است. آزادسازی ظرفیت هنگام حذف سرویس خارج از محدوده است (بخش ۱۴).</li>
+</ol>
+<p><strong>Idempotency، هویت و زمان</strong></p>
+<ol start="16">
+<li><code>Idempotency-Key</code> برای ثبت درخواست اجباری است، در محدوده هر مشتری یکتاست و تا زمانی که رزرو وجود دارد معتبر می‌ماند.</li>
+<li>دو درخواست وقتی «یکسان» هستند که منطقه و مقدار هر منبع در آن‌ها برابر باشد؛ <code>metadata</code> در این مقایسه نیست. هر منبع فقط یک بار در درخواست می‌آید و تکرار آن با <code>400</code> رد می‌شود.</li>
+<li>احراز هویت خارج از محدوده است. <code>customer_id</code> را یک Gateway بالادستی تأیید کرده و شناسه رزرو برای مشاهده، Commit و Cancel کافی است.</li>
+<li>همه مهلت‌ها با ساعت دیتابیس محاسبه و مقایسه می‌شوند، نه ساعت سرویس.</li>
+<li>PostgreSQL مرجع واحد حقیقت است. در نبود دیتابیس، سامانه درخواست را نمی‌پذیرد و حالت جایگزین در حافظه ندارد (سازگاری بر دسترس‌پذیری مقدم است).</li>
+</ol>
+<h2 id="s4">۴. مدل داده</h2>
+<table>
+<thead>
+<tr>
+<th>جدول</th>
+<th>محتوا</th>
+<th>نکته کلیدی</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>regions</code></td>
+<td>مناطق و وضعیت آن‌ها</td>
+<td>فقط منطقه <code>ONLINE</code> درخواست جدید می‌پذیرد</td>
+</tr>
+<tr>
+<td><code>resource_types</code></td>
+<td>کاتالوگ منابع</td>
+<td><code>is_divisible</code>، <code>min_amount</code>، واحد</td>
+</tr>
+<tr>
+<td><code>region_capacities</code></td>
+<td>دفتر ظرفیت هر (منطقه، منبع)</td>
+<td><code>CHECK (allocated + reserved &lt;= total)</code> و غیرمنفی بودن شمارنده‌ها</td>
+</tr>
+<tr>
+<td><code>customers</code></td>
+<td>مشتریان</td>
+<td>فقط مشتری <code>ACTIVE</code> می‌تواند رزرو کند</td>
+</tr>
+<tr>
+<td><code>customer_limits</code></td>
+<td>قرارداد مشتری</td>
+<td>یک سطر به ازای هر (مشتری، منبع)</td>
+</tr>
+<tr>
+<td><code>reservations</code></td>
+<td>رزروها و وضعیت آن‌ها</td>
+<td><code>UNIQUE (customer_id, idempotency_key)</code> و <code>CHECK</code> روی مقادیر وضعیت</td>
+</tr>
+<tr>
+<td><code>reservation_items</code></td>
+<td>مقدار هر منبع در یک رزرو</td>
+<td>یک سطر به ازای هر منبع، <code>amount &gt; 0</code></td>
+</tr>
+<tr>
+<td><code>capacity_audit_logs</code></td>
+<td>تاریخچه تغییرها</td>
+<td>در همان تراکنش تغییر نوشته می‌شود</td>
+</tr>
+</tbody>
+</table>
+<p>قیدهای <code>CHECK</code> لایه دوم دفاع هستند: حتی اگر در کد خطایی وجود داشته باشد، دیتابیس اجازه منفی شدن شمارنده یا فروش بیش از ظرفیت را نمی‌دهد و تراکنش برمی‌گردد.</p>
+<h2 id="s5">۵. چرخه عمر رزرو</h2>
+<figure class="fig-lifecycle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" role="img" aria-label="Reservation lifecycle" direction="ltr" style="direction:ltr;unicode-bidi:isolate">
+  <title>Reservation lifecycle</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="340" fill="#ffffff"/>
+  <circle cx="26" cy="150" r="7" fill="#0f172a"/>
+  <rect x="70" y="115" width="160" height="70" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="150.0" y="140.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Check request</text>
+  <text x="150.0" y="156.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">contract limits</text>
+  <text x="150.0" y="171.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">· region capacity</text>
+  <rect x="315" y="115" width="160" height="70" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+  <text x="395.0" y="140.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">RESERVED</text>
+  <text x="395.0" y="156.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reserved += n</text>
+  <text x="395.0" y="171.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">held until expires_at</text>
+  <rect x="315" y="252" width="160" height="62" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.4"/>
+  <text x="395.0" y="273.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Refused</text>
+  <text x="395.0" y="289.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">error with the reason</text>
+  <text x="395.0" y="304.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">nothing stored or held</text>
+  <rect x="590" y="22" width="156" height="66" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.4"/>
+  <text x="668.0" y="45.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">COMMITTED</text>
+  <text x="668.0" y="61.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reserved −= n</text>
+  <text x="668.0" y="76.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">allocated += n</text>
+  <rect x="590" y="117" width="156" height="66" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.4"/>
+  <text x="668.0" y="148.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">CANCELLED</text>
+  <text x="668.0" y="164.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reserved −= n</text>
+  <rect x="590" y="212" width="156" height="66" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.4"/>
+  <text x="668.0" y="243.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">EXPIRED</text>
+  <text x="668.0" y="259.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reserved −= n</text>
+  <path d="M 33 150 L 68 150" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 230 150 L 313 150" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="272" y="141" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">all rules pass</text>
+  <path d="M 150 185 L 150 283 L 313 283" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="232" y="274" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">a rule fails</text>
+  <path d="M 475 132 L 530 132 L 530 55 L 588 55" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="522" y="100" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="end">commit before deadline</text>
+  <path d="M 475 150 L 588 150" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="562" y="143" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">cancel</text>
+  <path d="M 475 168 L 530 168 L 530 245 L 588 245" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="522" y="208" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="end">deadline passed</text>
+  <text x="522" y="222" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#475569" text-anchor="end">(sweeper)</text>
+  <text x="380" y="332" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">COMMITTED, CANCELLED and EXPIRED are final.  n = requested amount of each resource.</text>
+</svg>
+<figcaption>چرخه عمر رزرو</figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>گذار</th>
+<th>آغازگر</th>
+<th>اثر روی دفتر ظرفیت</th>
+<th>اثر روی سهمیه مشتری</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ثبت ← <code>RESERVED</code></td>
+<td>مشتری</td>
+<td><code>reserved += n</code></td>
+<td>مصرف می‌شود</td>
+</tr>
+<tr>
+<td><code>RESERVED → COMMITTED</code></td>
+<td>مشتری یا سرویس Provisioning</td>
+<td><code>reserved −= n</code> و <code>allocated += n</code></td>
+<td>مصرف‌شده می‌ماند</td>
+</tr>
+<tr>
+<td><code>RESERVED → CANCELLED</code></td>
+<td>مشتری</td>
+<td><code>reserved −= n</code></td>
+<td>آزاد می‌شود</td>
+</tr>
+<tr>
+<td><code>RESERVED → EXPIRED</code></td>
+<td>Sweeper</td>
+<td><code>reserved −= n</code></td>
+<td>آزاد می‌شود</td>
+</tr>
+</tbody>
+</table>
+<p>سه وضعیت <code>COMMITTED</code>، <code>CANCELLED</code> و <code>EXPIRED</code> پایانی هستند. درخواستی که پذیرفته نشود رزروی نمی‌سازد و هیچ شمارنده‌ای را تغییر نمی‌دهد.</p>
+<h2 id="s6">۶. معماری نرم‌افزار</h2>
+<figure class="fig-architecture"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Hexagonal architecture" direction="ltr" style="direction:ltr;unicode-bidi:isolate">
+  <title>Hexagonal architecture</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <rect x="20" y="14" width="720" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="726" y="33" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">APP  ·  inbound adapters  (internal/app, cmd)</text>
+  <rect x="40" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="145.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">HTTP API</text>
+  <text x="145.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">net/http · JSON envelope</text>
+  <rect x="275" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="380.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">TTL Sweeper</text>
+  <text x="380.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">background worker</text>
+  <rect x="510" y="44" width="210" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="615.0" y="67.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">CLI</text>
+  <text x="615.0" y="83.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">server · worker · migrate · seed</text>
+  <rect x="20" y="128" width="720" height="112" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="726" y="147" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">CORE  ·  business rules, no I/O  (internal/core)</text>
+  <rect x="40" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="145.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Inbound ports</text>
+  <text x="145.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">ReservationService</text>
+  <text x="145.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">CapacityService</text>
+  <rect x="275" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="380.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Services + Entities</text>
+  <text x="380.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">validation · TTL policy</text>
+  <text x="380.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">contract limit rules</text>
+  <rect x="510" y="160" width="210" height="66" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="615.0" y="183.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Outbound ports</text>
+  <text x="615.0" y="199.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">ReservationRepository</text>
+  <text x="615.0" y="214.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">CapacityRepository</text>
+  <rect x="20" y="262" width="720" height="80" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="34" y="281" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="start">INFRA  ·  outbound adapters  (internal/infra/postgres)</text>
+  <rect x="40" y="294" width="445" height="36" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="262.5" y="316.75" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL repositories  (pgx · row locks · one transaction per operation)</text>
+  <rect x="510" y="294" width="210" height="36" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="615.0" y="316.75" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#0f172a" text-anchor="middle">SQL files: schema · seed</text>
+  <path d="M 290 375 A 90.0 9 0 0 1 470 375 L 470 411 A 90.0 9 0 0 1 290 411 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 290 375 A 90.0 9 0 0 0 470 375" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="380.0" y="401.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL 16</text>
+  <path d="M 125 94 L 125 158" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 380 94 L 380 116 L 165 116 L 165 158" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 250 193 L 273 193" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 485 193 L 508 193" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 440 292 L 440 251 L 615 251 L 615 228" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <text x="528" y="246" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">implements</text>
+  <path d="M 262 330 L 262 394 L 288 394" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>
+<figcaption>معماری لایه‌ای</figcaption></figure>
+<p>ساختار پروژه Hexagonal (Ports and Adapters) است:</p>
+<ul>
+<li><strong>Core</strong> (<code>internal/core</code>): موجودیت‌ها، قواعد قرارداد، اعتبارسنجی و Interfaceها. هیچ وابستگی به HTTP یا دیتابیس ندارد.</li>
+<li><strong>App</strong> (<code>internal/app</code>, <code>cmd</code>): ورودی‌های سامانه؛ HTTP API، Sweeper و دستورهای CLI.</li>
+<li><strong>Infra</strong> (<code>internal/infra/postgres</code>): پیاده‌سازی Repositoryها روی PostgreSQL. همه تراکنش‌ها اینجاست.</li>
+</ul>
+<p>بررسی سقف قرارداد و کسر ظرفیت باید زیر قفل و در یک تراکنش انجام شود؛ به همین دلیل Repository مراحل را داخل تراکنش اجرا می‌کند و قاعده قرارداد (<code>CustomerLimit.Validate</code>) در Core می‌ماند.</p>
+<p><strong>چرا PostgreSQL؟</strong> مسئله در اصل یک مسئله سازگاری است: چند شمارنده و چند رکورد باید با هم و اتمیک تغییر کنند. تراکنش ACID، قفل ردیفی و قید <code>CHECK</code> دقیقاً همین را بدون ابزار اضافه فراهم می‌کنند. استفاده از Cache یا قفل توزیع‌شده در کنار دیتابیس، یک مرجع حقیقت دوم و حالت‌های خرابی بیشتری می‌ساخت.</p>
+<h2 id="s7">۷. پردازش یک درخواست رزرو</h2>
+<figure class="fig-create-transaction"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" role="img" aria-label="Steps of the create-reservation transaction" direction="ltr" style="direction:ltr;unicode-bidi:isolate">
+  <title>Steps of the create-reservation transaction</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="300" fill="#ffffff"/>
+  <text x="20" y="22" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#475569" text-anchor="start">One database transaction  ·  any failed step rolls everything back</text>
+  <rect x="20" y="40" width="164" height="74" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="102.0" y="67.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">1  Lock customer</text>
+  <text x="102.0" y="83.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">FOR NO KEY UPDATE</text>
+  <text x="102.0" y="98.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">one customer at a time</text>
+  <rect x="204" y="40" width="164" height="74" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="286.0" y="67.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">2  Idempotency</text>
+  <text x="286.0" y="83.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">key already used?</text>
+  <text x="286.0" y="98.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">→ return that reservation</text>
+  <rect x="388" y="40" width="164" height="74" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="470.0" y="75.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">3  Region</text>
+  <text x="470.0" y="91.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">must be ONLINE</text>
+  <rect x="572" y="40" width="164" height="74" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="654.0" y="67.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">4  Limits</text>
+  <text x="654.0" y="83.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">catalog minimum ·</text>
+  <text x="654.0" y="98.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">contract vs. current usage</text>
+  <path d="M 184 77.0 L 202 77.0" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 368 77.0 L 386 77.0" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 552 77.0 L 570 77.0" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 654.0 114 L 654.0 146 L 130 146 L 130 176" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="20" y="178" width="220" height="74" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="130.0" y="205.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">5  Reserve capacity</text>
+  <text x="130.0" y="221.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">one conditional UPDATE per item,</text>
+  <text x="130.0" y="236.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">items sorted by resource id</text>
+  <rect x="280" y="178" width="220" height="74" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.4"/>
+  <text x="390.0" y="205.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">6  Store</text>
+  <text x="390.0" y="221.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reservation (RESERVED) · items</text>
+  <text x="390.0" y="236.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">· audit row</text>
+  <rect x="540" y="178" width="196" height="74" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.4"/>
+  <text x="638.0" y="205.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">7  COMMIT</text>
+  <text x="638.0" y="221.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">all effects visible</text>
+  <text x="638.0" y="236.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">at once</text>
+  <path d="M 240 215.0 L 278 215.0" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 500 215.0 L 538 215.0" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="20" y="284" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="start">Step 5:  UPDATE … SET reserved = reserved + n  WHERE available &gt;= n   →  0 rows changed means not enough capacity</text>
+</svg>
+<figcaption>مراحل تراکنش ثبت رزرو</figcaption></figure>
+<p>کل کار در <strong>یک تراکنش</strong> انجام می‌شود و شکست هر مرحله همه چیز را برمی‌گرداند:</p>
+<ol>
+<li><strong>قفل مشتری.</strong> درخواست‌های یک مشتری پشت‌سرهم پردازش می‌شوند. این کار سقف کلی قرارداد را بین مناطق درست نگه می‌دارد و تکرارهای همزمان یک کلید را به صف می‌کند.</li>
+<li><strong>بررسی Idempotency.</strong> اگر مشتری این کلید را قبلاً استفاده کرده باشد، همان رزرو برمی‌گردد.</li>
+<li><strong>منطقه.</strong> باید وجود داشته باشد و <code>ONLINE</code> باشد.</li>
+<li><strong>محدودیت‌ها.</strong> برای هر منبع: وجود در کاتالوگ، حداقل مقدار کاتالوگ، و سقف‌های قرارداد در برابر مصرف فعلی مشتری.</li>
+<li><strong>کسر ظرفیت.</strong> برای هر منبع یک <code>UPDATE</code> شرطی اجرا می‌شود که فقط وقتی موجودی کافی باشد <code>reserved</code> را زیاد می‌کند. اگر ردیفی تغییر نکند، ظرفیت کافی نیست.</li>
+<li><strong>ثبت.</strong> رزرو با وضعیت <code>RESERVED</code>، آیتم‌ها و یک سطر Audit ذخیره می‌شوند.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>دلیل رد</th>
+<th>HTTP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ظرفیت منطقه کافی نیست</td>
+<td>409</td>
+</tr>
+<tr>
+<td>عبور از سقف کل قرارداد</td>
+<td>422</td>
+</tr>
+<tr>
+<td>منبع در قرارداد مشتری غیرفعال است</td>
+<td>422</td>
+</tr>
+<tr>
+<td>بیشتر از حداکثر یا کمتر از حداقل هر درخواست</td>
+<td>422</td>
+</tr>
+<tr>
+<td>منبع ناشناخته است یا در این منطقه ارائه نمی‌شود</td>
+<td>422</td>
+</tr>
+</tbody>
+</table>
+<p>کمبود ظرفیت 409 است چون با تغییر وضعیت سامانه ممکن است بعداً موفق شود؛ بقیه موارد تا تغییر قرارداد یا درخواست تکرار می‌شوند.</p>
+<h2 id="s8">۸. همزمانی و سازگاری</h2>
+<p><strong>جلوگیری از فروش بیش از ظرفیت.</strong> بررسی موجودی و کسر آن یک دستور است:</p>
+<pre><code class="language-sql">UPDATE region_capacities
+SET reserved_capacity = reserved_capacity + $1
+WHERE region_id = $2 AND resource_type_id = $3
+  AND total_capacity - allocated_capacity - reserved_capacity &gt;= $1;
+</code></pre>
+<p>PostgreSQL هنگام اجرای <code>UPDATE</code> ردیف را قفل می‌کند، پس دو درخواست همزمان نمی‌توانند یک موجودی را ببینند و هر دو بردارند؛ دومی پس از اولی و روی مقدار جدید ارزیابی می‌شود.</p>
+<p><strong>سقف قرارداد.</strong> مصرف مشتری از روی رزروهایش محاسبه می‌شود. بدون قفل مشتری، دو درخواست همزمان در دو منطقه (که ردیف ظرفیت مشترکی ندارند) هر دو مصرف قبلی را می‌دیدند و هر دو پذیرفته می‌شدند. قفل <code>FOR NO KEY UPDATE</code> روی ردیف مشتری این حالت را حذف می‌کند.</p>
+<p><strong>ترتیب قفل‌ها.</strong> همه تراکنش‌ها قفل‌ها را به یک ترتیب می‌گیرند:</p>
+<ol>
+<li>ردیف مشتری (فقط در ثبت رزرو)</li>
+<li>ردیف رزرو (در Commit، Cancel و Expire)</li>
+<li>ردیف‌های ظرفیت به ترتیب صعودی شناسه منبع</li>
+</ol>
+<p>هر تراکنش فقط به ردیف‌های ظرفیت یک منطقه دست می‌زند و آیتم‌های هر رزرو مرتب ذخیره می‌شوند، پس این ترتیب در همه مسیرها یکسان است. چون هیچ تراکنشی قفل‌ها را برخلاف این ترتیب نمی‌گیرد، چرخه انتظار و در نتیجه Deadlock شکل نمی‌گیرد. Sweeper هر Hold منقضی را در تراکنش جداگانه خودش آزاد می‌کند تا همین قاعده برقرار بماند.</p>
+<p><strong>سطح Isolation.</strong> پیش‌فرض PostgreSQL یعنی <code>READ COMMITTED</code> کافی است، چون هر تصمیم زیر قفل ردیف مربوط به خودش گرفته می‌شود و هر دستور پس از گرفتن قفل، آخرین داده Commit‌شده را می‌بیند.</p>
+<p><strong>هزینه این طراحی.</strong> درخواست‌های یک مشتری و درخواست‌های یک (منطقه، منبع) سریالی می‌شوند. تراکنش‌ها کوتاه‌اند و این برای بار این مسئله مناسب است؛ مسیر افزایش مقیاس در بخش ۱۲ آمده است.</p>
+<h2 id="s9">۹. Idempotency و ارسال دوباره</h2>
+<table>
+<thead>
+<tr>
+<th>وضعیت</th>
+<th>رفتار</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>اولین درخواست با یک کلید</td>
+<td>بررسی می‌شود: <code>201</code> و ساخت رزرو، یا رد با دلیل</td>
+</tr>
+<tr>
+<td>همان کلید، همان درخواست</td>
+<td><code>200</code> و همان رزرو قبلی؛ چیزی دوباره کسر نمی‌شود</td>
+</tr>
+<tr>
+<td>همان کلید، درخواست متفاوت</td>
+<td><code>422</code>؛ رزرو قبلی دست‌نخورده می‌ماند</td>
+</tr>
+<tr>
+<td>چند ارسال همزمان با یک کلید</td>
+<td>پشت قفل مشتری به صف می‌شوند؛ یکی رزرو را می‌سازد و بقیه همان را می‌گیرند. قید یکتایی دیتابیس لایه دوم است</td>
+</tr>
+<tr>
+<td>درخواستی که رد شده</td>
+<td>کلید مصرف نمی‌شود؛ ارسال دوباره از نو بررسی می‌شود</td>
+</tr>
+<tr>
+<td>تکرار Commit روی رزرو Commit‌شده</td>
+<td><code>200</code> با همان پاسخ، بدون اثر دوباره</td>
+</tr>
+<tr>
+<td>تکرار Cancel روی رزرو لغوشده</td>
+<td><code>200</code> با همان پاسخ، بدون اثر دوباره</td>
+</tr>
+</tbody>
+</table>
+<p>کلید را می‌توان در هدر <code>Idempotency-Key</code> یا در فیلد <code>idempotency_key</code> بدنه فرستاد؛ هدر اولویت دارد.</p>
+<h2 id="s10">۱۰. خرابی و بازیابی</h2>
+<p>اصل طراحی: <strong>هر عملیات یک تراکنش دیتابیس است و سرویس هیچ وضعیتی در حافظه نگه نمی‌دارد.</strong> پس هر خرابی یا قبل از Commit تراکنش رخ می‌دهد (هیچ اثری نمی‌ماند) یا بعد از آن (اثر کامل ثبت شده است).</p>
+<table>
+<thead>
+<tr>
+<th>رخداد</th>
+<th>رفتار هنگام خرابی</th>
+<th>وضعیت پس از بازیابی</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>کرش سرویس وسط پردازش یک درخواست</td>
+<td>تراکنش ناتمام را PostgreSQL برمی‌گرداند</td>
+<td>هیچ اثر ناقصی وجود ندارد؛ مشتری با همان کلید دوباره می‌فرستد</td>
+</tr>
+<tr>
+<td>قطع ارتباط پس از ثبت و پیش از رسیدن پاسخ</td>
+<td>رزرو ثبت شده ولی مشتری نمی‌داند</td>
+<td>ارسال دوباره با همان کلید همان رزرو را برمی‌گرداند</td>
+</tr>
+<tr>
+<td>از دسترس خارج شدن PostgreSQL</td>
+<td><code>/readyz</code> پاسخ 503 می‌دهد تا Load Balancer ترافیک نفرستد؛ <code>/healthz</code> سالم می‌ماند تا سرویس بی‌دلیل Restart نشود؛ درخواست‌ها خطای 500 می‌گیرند و چیزی ثبت نمی‌شود</td>
+<td>Connection Pool خودش دوباره وصل می‌شود و <code>/readyz</code> سبز می‌شود</td>
+</tr>
+<tr>
+<td>پایان مهلت Holdها در زمان قطعی یا خاموشی</td>
+<td>ظرفیت آن‌ها موقتاً آزاد نمی‌شود، اما قابل Commit هم نیستند</td>
+<td>Sweeper در اولین اجرا پس از راه‌اندازی همه آن‌ها را منقضی و ظرفیت را آزاد می‌کند</td>
+</tr>
+<tr>
+<td>رها شدن فرایند توسط مشتری</td>
+<td>Hold تا پایان مهلت می‌ماند</td>
+<td><code>EXPIRED</code> و آزادسازی ظرفیت</td>
+</tr>
+<tr>
+<td>اجرای همزمان چند نسخه از سرویس یا Sweeper</td>
+<td>هر Hold با یک <code>UPDATE</code> شرطی منقضی می‌شود</td>
+<td>هر Hold دقیقاً یک بار منقضی می‌شود</td>
+</tr>
+<tr>
+<td>خاموشی عادی (<code>SIGTERM</code>)</td>
+<td>درخواست‌های در جریان تمام می‌شوند، Sweeper متوقف و Pool بسته می‌شود</td>
+<td>راه‌اندازی بعدی از وضعیت دیتابیس ادامه می‌دهد</td>
+</tr>
+</tbody>
+</table>
+<p>سناریوی قطعی دیتابیس روی نسخه در حال اجرا آزموده شده است: ثبت Hold، توقف PostgreSQL، گذشتن مهلت، راه‌اندازی دوباره. نتیجه: در زمان قطعی <code>/readyz</code> برابر 503 و درخواست‌ها ناموفق؛ پس از بازگشت Hold قدیمی <code>EXPIRED</code> و ظرفیت آزاد؛ و درخواستِ ناموفقِ زمان قطعی با همان کلید یک بار ثبت شد.</p>
+<p><strong>توضیح‌پذیری.</strong> هر تغییر وضعیت یک سطر در <code>capacity_audit_logs</code> دارد (<code>RESERVE</code>، <code>COMMIT</code>، <code>CANCEL</code>، <code>EXPIRE</code>) که در همان تراکنش نوشته می‌شود؛ پس تاریخچه با وضعیت واقعی همیشه همخوان است. برای بررسی درستی دفتر پس از یک حادثه، این پرس‌وجو نباید هیچ سطری برگرداند:</p>
+<pre><code class="language-sql">SELECT c.region_id, c.resource_type_id, c.reserved_capacity,
+       COALESCE(SUM(ri.amount) FILTER (WHERE r.status = 'RESERVED'), 0) AS live_holds
+FROM region_capacities c
+LEFT JOIN reservations r       ON r.region_id = c.region_id
+LEFT JOIN reservation_items ri ON ri.reservation_id = r.id
+                              AND ri.resource_type_id = c.resource_type_id
+GROUP BY c.region_id, c.resource_type_id, c.reserved_capacity
+HAVING c.reserved_capacity &lt;&gt; COALESCE(SUM(ri.amount) FILTER (WHERE r.status = 'RESERVED'), 0);
+</code></pre>
+<p>همین شرط در آزمون‌های یکپارچه پس از هر سناریوی همزمانی بررسی می‌شود.</p>
+<h2 id="s11">۱۱. API</h2>
+<p>همه پاسخ‌ها قالب <code>{"success": bool, "data": …, "error": "…"}</code> دارند.</p>
+<table>
+<thead>
+<tr>
+<th>نیاز</th>
+<th>متد و مسیر</th>
+<th>توضیح</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>۱. مشاهده وضعیت ظرفیت</td>
+<td><code>GET /api/v1/regions</code></td>
+<td>فهرست مناطق و وضعیت آن‌ها</td>
+</tr>
+<tr>
+<td></td>
+<td><code>GET /api/v1/regions/{region_id}/capacity</code></td>
+<td>شمارنده‌ها و موجودی هر منبع</td>
+</tr>
+<tr>
+<td></td>
+<td><code>GET /api/v1/resources</code></td>
+<td>کاتالوگ منابع</td>
+</tr>
+<tr>
+<td>۲. ثبت درخواست</td>
+<td><code>POST /api/v1/reservations</code></td>
+<td>با <code>Idempotency-Key</code></td>
+</tr>
+<tr>
+<td>۳. پیگیری وضعیت</td>
+<td><code>GET /api/v1/reservations/{id}</code></td>
+<td>وضعیت و مهلت رزرو</td>
+</tr>
+<tr>
+<td>۴. تکمیل یا لغو</td>
+<td><code>POST /api/v1/reservations/{id}/commit</code></td>
+<td>نهایی‌سازی</td>
+</tr>
+<tr>
+<td></td>
+<td><code>POST /api/v1/reservations/{id}/cancel</code></td>
+<td>لغو و آزادسازی</td>
+</tr>
+<tr>
+<td>۵. درخواست‌های قبلی</td>
+<td><code>GET /api/v1/reservations?customer_id=…</code></td>
+<td>جدیدترین اول؛ <code>status</code>، <code>page</code>، <code>page_size</code></td>
+</tr>
+<tr>
+<td>سلامت</td>
+<td><code>GET /healthz</code> ، <code>GET /readyz</code></td>
+<td>Liveness و Readiness</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>کد</th>
+<th>معنا</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200</code></td>
+<td>موفق؛ یا تکرار یک عملیات قبلاً انجام‌شده</td>
+</tr>
+<tr>
+<td><code>201</code></td>
+<td>رزرو جدید ساخته شد</td>
+</tr>
+<tr>
+<td><code>400</code></td>
+<td>ورودی نامعتبر (بدنه، شناسه، کلید، مقدار، منبع تکراری)</td>
+</tr>
+<tr>
+<td><code>403</code></td>
+<td>مشتری فعال نیست</td>
+</tr>
+<tr>
+<td><code>404</code></td>
+<td>مشتری، منطقه یا رزرو پیدا نشد</td>
+</tr>
+<tr>
+<td><code>409</code></td>
+<td>کمبود ظرفیت؛ منطقه در دسترس نیست؛ وضعیت رزرو اجازه این عملیات را نمی‌دهد؛ مهلت تمام شده</td>
+</tr>
+<tr>
+<td><code>422</code></td>
+<td>رد بر اساس قرارداد یا کاتالوگ؛ کلید تکراری با درخواست متفاوت</td>
+</tr>
+<tr>
+<td><code>500</code></td>
+<td>خطای داخلی یا در دسترس نبودن دیتابیس؛ با همان کلید می‌توان دوباره تلاش کرد</td>
+</tr>
+</tbody>
+</table>
+<p>نمونه درخواست و پاسخ‌ها در <a href="https://github.com/Ehsan-Eghbali/cloud-capacity/blob/main/README.md">README</a> آمده است.</p>
+<h2 id="s12">۱۲. توسعه در محیط واقعی</h2>
+<figure class="fig-production"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Production topology: one cell per region" direction="ltr" style="direction:ltr;unicode-bidi:isolate">
+  <title>Production topology: one cell per region</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <rect x="20" y="16" width="220" height="56" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="130.0" y="34.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Clients</text>
+  <text x="130.0" y="50.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">panel · customer automation ·</text>
+  <text x="130.0" y="65.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">internal services</text>
+  <rect x="290" y="16" width="220" height="56" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="400.0" y="34.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">API gateway</text>
+  <text x="400.0" y="50.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">authN/Z · rate limits ·</text>
+  <text x="400.0" y="65.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">routes by region_id</text>
+  <rect x="560" y="16" width="180" height="56" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="650.0" y="42.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Contract service</text>
+  <text x="650.0" y="58.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">source of customer limits</text>
+  <path d="M 240 44 L 288 44" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="20" y="112" width="345" height="230" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="351" y="131" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">Cell: ir-thr-fr1</text>
+  <rect x="38" y="144" width="150" height="62" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="113.0" y="165.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Allocator API</text>
+  <text x="113.0" y="181.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">N stateless replicas</text>
+  <text x="113.0" y="196.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">behind /readyz</text>
+  <rect x="200" y="144" width="148" height="62" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="274.0" y="165.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Sweeper</text>
+  <text x="274.0" y="181.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">M replicas</text>
+  <text x="274.0" y="196.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">SKIP LOCKED</text>
+  <path d="M 38 245 A 75.0 9 0 0 1 188 245 L 188 305 A 75.0 9 0 0 1 38 305 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 38 245 A 75.0 9 0 0 0 188 245" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="113.0" y="277.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL primary</text>
+  <text x="113.0" y="293.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">capacity ledger · holds</text>
+  <path d="M 200 245 A 74.0 9 0 0 1 348 245 L 348 305 A 74.0 9 0 0 1 200 305 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 200 245 A 74.0 9 0 0 0 348 245" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="274.0" y="277.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Sync standby</text>
+  <text x="274.0" y="293.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">automatic failover</text>
+  <path d="M 113 206 L 113 238" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 274 206 L 274 222 L 130 222 L 130 238" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 188 276 L 198 276" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="395" y="112" width="345" height="230" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="726" y="131" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="end">Cell: ir-tbz-1</text>
+  <rect x="413" y="144" width="150" height="62" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="488.0" y="165.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Allocator API</text>
+  <text x="488.0" y="181.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">N stateless replicas</text>
+  <text x="488.0" y="196.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">behind /readyz</text>
+  <rect x="575" y="144" width="148" height="62" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="649.0" y="165.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Sweeper</text>
+  <text x="649.0" y="181.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">M replicas</text>
+  <text x="649.0" y="196.5" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">SKIP LOCKED</text>
+  <path d="M 413 245 A 75.0 9 0 0 1 563 245 L 563 305 A 75.0 9 0 0 1 413 305 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 413 245 A 75.0 9 0 0 0 563 245" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="488.0" y="277.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">PostgreSQL primary</text>
+  <text x="488.0" y="293.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">capacity ledger · holds</text>
+  <path d="M 575 245 A 74.0 9 0 0 1 723 245 L 723 305 A 74.0 9 0 0 1 575 305 Z" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.4"/><path d="M 575 245 A 74.0 9 0 0 0 723 245" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>
+  <text x="649.0" y="277.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#0f172a" text-anchor="middle">Sync standby</text>
+  <text x="649.0" y="293.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">automatic failover</text>
+  <path d="M 488 206 L 488 238" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 649 206 L 649 222 L 505 222 L 505 238" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 563 276 L 573 276" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 370 72 L 370 92 L 110 92 L 110 142" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 430 72 L 430 92 L 490 92 L 490 142" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 650 72 L 650 110" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <text x="688" y="96" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">limits (CDC)</text>
+  <rect x="20" y="366" width="345" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="192.5" y="389.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Outbox → event stream</text>
+  <text x="192.5" y="405.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">reservation events for billing, analytics, alerting</text>
+  <rect x="395" y="366" width="345" height="50" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+  <text x="567.5" y="389.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#0f172a" text-anchor="middle">Provisioning services</text>
+  <text x="567.5" y="405.0" font-family="Vazirmatn, Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#475569" text-anchor="middle">create the VM / volume / IP, then call commit or cancel</text>
+  <path d="M 192 342 L 192 364" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 567 364 L 567 344" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>
+<figcaption>توپولوژی محیط عملیاتی</figcaption></figure>
+<p>پیاده‌سازی فعلی یک سرویس و یک دیتابیس است. مسیر رسیدن به محیط واقعی:</p>
+<p><strong>چندمنطقه‌ای.</strong> ظرفیت ذاتاً منطقه‌ای است، پس هر منطقه یک Cell مستقل می‌شود: نسخه‌های Allocator به همراه PostgreSQL همان منطقه. Gateway درخواست را بر اساس <code>region_id</code> مسیریابی می‌کند و قطعی یک منطقه یا شبکه بین مناطق، رزرو در منطقه دیگر را متوقف نمی‌کند. طراحی فعلی با این تقسیم سازگار است، چون هر درخواست فقط به یک منطقه مربوط است و همه قفل‌های ظرفیت درون همان منطقه هستند.</p>
+<p><strong>سقف کلی قرارداد بین Cellها.</strong> امروز چون یک دیتابیس داریم، قفل مشتری این سقف را دقیق نگه می‌دارد. با جدا شدن دیتابیس‌ها دو راه وجود دارد: بررسی همزمان در یک سرویس مرکزی (ساده ولی مناطق را به هم وابسته می‌کند)، یا تقسیم سقف هر مشتری به سهم‌های منطقه‌ای که هر Cell محلی اعمال می‌کند و یک سرویس مرکزی آن‌ها را بازتوزیع می‌کند. راه دوم پیشنهاد می‌شود، چون رزرو در یک منطقه به سلامت مناطق دیگر وابسته نمی‌ماند.</p>
+<p><strong>دسترس‌پذیری.</strong> PostgreSQL با یک Standby همگام و Failover خودکار (مثلاً Patroni) تا رزرو تأییدشده از دست نرود. سرویس Stateless است و به هر تعداد نسخه پشت <code>/readyz</code> اجرا می‌شود. Sweeper با دستور <code>worker</code> جدا مستقر می‌شود.</p>
+<p><strong>مقیاس.</strong> گلوگاه طبیعی، ردیف شمارنده یک منبع پرتقاضا است. راه افزایش ظرفیت، شکستن آن به استخرهای کوچک‌تر در سطح Availability Zone، کلاستر یا Host Aggregate است که با واقعیت زیرساخت هم منطبق‌تر است. جدول‌های <code>reservations</code> و <code>capacity_audit_logs</code> بر اساس زمان Partition و داده قدیمی بایگانی می‌شود.</p>
+<p><strong>مشاهده‌پذیری.</strong> Metric برای تعداد Hold در هر وضعیت، نرخ هر دلیل رد، فاصله Hold تا Commit، نسبت Holdهای منقضی و زمان انتظار قفل؛ Trace برای هر درخواست؛ و هشدار روی پرس‌وجوی سازگاری بخش ۱۰.</p>
+<p><strong>یکپارچگی با سایر سامانه‌ها.</strong> رویدادهای رزرو با الگوی Outbox (نوشتن رویداد در همان تراکنش) برای صورتحساب و تحلیل منتشر می‌شوند. قراردادها با CDC از سامانه مرجع به هر Cell می‌رسند.</p>
+<p><strong>امنیت.</strong> احراز هویت و Rate Limit در Gateway؛ <code>customer_id</code> از Token خوانده می‌شود و مالکیت رزرو در Commit و Cancel بررسی می‌شود.</p>
+<p><strong>قابلیت‌های بعدی.</strong> گذار <code>release</code> برای آزادسازی ظرفیت هنگام حذف سرویس، تمدید Hold برای Provisioning طولانی، ثبت درخواست‌های ردشده برای گزارش‌گیری، کاتالوگ محصول، API مدیریت ظرفیت برای تیم عملیات، و ابزار Migration نسخه‌دار.</p>
+<h2 id="s13">۱۳. آزمون و راه‌اندازی</h2>
+<pre><code class="language-bash">docker compose up --build -d      # PostgreSQL + migration + seed + service
+curl http://localhost:8080/readyz
+make test                         # unit tests, no database needed
+make test-integration             # integration tests on PostgreSQL
+</code></pre>
+<p>اگر پورت <code>5432</code> یا <code>8080</code> روی میزبان اشغال است:</p>
+<pre><code class="language-bash">POSTGRES_HOST_PORT=5433 APP_PORT=8081 docker compose up --build -d
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>سطح</th>
+<th>چه چیزی را می‌آزماید</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>واحد: <code>entity</code></td>
+<td>قواعد سقف قرارداد، محاسبه موجودی، تشخیص درخواست یکسان</td>
+</tr>
+<tr>
+<td>واحد: <code>service</code></td>
+<td>اعتبارسنجی ورودی (از جمله منبع تکراری)، مهلت Hold از تنظیمات، صفحه‌بندی</td>
+</tr>
+<tr>
+<td>واحد: <code>http</code></td>
+<td>کدهای وضعیت، اولویت هدر کلید، نشت نکردن خطای داخلی، Readiness</td>
+</tr>
+<tr>
+<td>یکپارچه</td>
+<td>عدم فروش بیش از ظرفیت زیر بار همزمان؛ سقف قرارداد در یک منطقه و بین دو منطقه؛ یک رزرو از ۲۰ تکرار همزمان؛ نبود Deadlock بین Sweeper و ثبت رزرو؛ Commit، Cancel و Expire و تکرار آن‌ها؛ دلایل رد؛ تاریخچه</td>
+</tr>
+</tbody>
+</table>
+<p>آزمون‌های یکپارچه پس از هر سناریو سازگاری دفتر ظرفیت را بررسی می‌کنند. برای اطمینان از حساس بودن آزمون‌ها، سه محافظ کلیدی (قفل مشتری، ترتیب قفل ردیف‌های ظرفیت و شرط موجودی) هر کدام موقتاً برداشته شدند و آزمون‌های مربوط شکست خوردند.</p>
+<h2 id="s14">۱۴. محدودیت‌های شناخته‌شده</h2>
+<ul>
+<li><strong>آزادسازی پس از Commit وجود ندارد.</strong> ظرفیت و سهمیه <code>COMMITTED</code> تا تعریف گذار <code>release</code> آزاد نمی‌شود.</li>
+<li><strong>تمدید Hold وجود ندارد.</strong> اگر Provisioning از مهلت طولانی‌تر شود، Commit رد می‌شود و سرویس بالادستی باید دوباره رزرو کند. تا آن زمان TTL باید متناسب با کندترین محصول انتخاب شود.</li>
+<li><strong>هر درخواست یک منطقه.</strong> سرویس چندمنطقه‌ای باید چند رزرو بگیرد و خودش آن‌ها را هماهنگ کند.</li>
+<li><strong>مشاهده ظرفیت تضمین نیست.</strong> عدد <code>available</code> می‌تواند تا لحظه ثبت درخواست تغییر کند.</li>
+<li><strong>Hold منقضی تا اجرای بعدی Sweeper (پیش‌فرض ۵ ثانیه) هنوز <code>RESERVED</code> دیده می‌شود و ظرفیتش آزاد نشده است.</strong> Commit این تأخیر را ندارد و مهلت را دقیق اعمال می‌کند.</li>
+<li><strong>درخواست ردشده در تاریخچه نیست.</strong> تاریخچه فقط رزروهای ساخته‌شده را نشان می‌دهد.</li>
+<li><strong>Migration بدون جدول نسخه.</strong> یک فایل Schema وجود دارد که تکرارپذیر نوشته شده است؛ برای محیط واقعی ابزار نسخه‌دار لازم است.</li>
+<li><strong>صفحه‌بندی با Offset.</strong> برای تاریخچه‌های بسیار بزرگ باید به Keyset تبدیل شود.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: "10s"
+  write_timeout: "10s"
+  idle_timeout: "60s"
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "password"
+  name: "cloud_capacity"
+  sslmode: "disable"
+  max_conns: 50
+  min_conns: 5
+  max_conn_lifetime: "30m"
+  max_conn_idle_time: "5m"
+
+reservation:
+  ttl_seconds: 600
+
+worker:
+  sweeper_interval: "5s"
+  sweeper_batch_size: 100
